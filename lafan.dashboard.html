@@ -305,6 +305,207 @@
         margin-top: 0;
       }
     }
+
+    /* Page Views */
+    .page-view {
+      display: none;
+    }
+    .page-view.active {
+      display: block;
+    }
+
+    /* Filters Bar */
+    .filters-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 18px 24px;
+      border-radius: var(--radius);
+      border: 1px solid #ededeb;
+      box-shadow: var(--shadow);
+      align-items: flex-end;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 160px;
+    }
+    .filter-group.search {
+      flex: 2;
+    }
+    .filter-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .filter-input, .filter-select {
+      height: 42px;
+      padding: 8px 14px;
+      border: 1px solid #ededeb;
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fbfbfa;
+      color: var(--ink);
+      outline: none;
+      transition: all .18s ease;
+      font-family: inherit;
+    }
+    .filter-input:focus, .filter-select:focus {
+      border-color: var(--orange);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(251, 89, 50, 0.12);
+    }
+
+    /* Orders Summary row on Orders Page */
+    .orders-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .summary-card {
+      background: #fff;
+      border: 1px solid #ededeb;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+    }
+    .summary-card .label {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .summary-card .value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 6px;
+      color: var(--ink);
+      font-family: "Inter", sans-serif;
+    }
+    .summary-card .value small {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-left: 2px;
+    }
+
+    /* Table Container */
+    .table-container {
+      background: #fff;
+      border: 1px solid #ededeb;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .table-scroll {
+      max-height: 580px;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 15px;
+    }
+    .orders-table th {
+      position: sticky;
+      top: 0;
+      background: #f4f4f2;
+      color: #5c5c56;
+      font-weight: 600;
+      padding: 16px 20px;
+      border-bottom: 2px solid #ededeb;
+      z-index: 1;
+      white-space: nowrap;
+    }
+    .orders-table td {
+      padding: 14px 20px;
+      border-bottom: 1px solid #ecece9;
+      color: #3c3c36;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .orders-table tbody tr:hover {
+      background-color: #fbfbfa;
+    }
+    .orders-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Channel badges matching Google Sheet colors precisely */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .badge-website {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+    .badge-line {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    .badge-retail {
+      background-color: #f3e8ff;
+      color: #6b21a8;
+    }
+    .badge-other {
+      background-color: #f1f5f9;
+      color: #475569;
+    }
+
+    /* Ticket badge */
+    .ticket-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background-color: #f0f0ed;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    /* Table Footer / Pagination style info */
+    .table-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-top: 1px solid #ededeb;
+      background: #fbfbfa;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    @media (max-width: 820px) {
+      .orders-summary {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .filters-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -329,11 +530,13 @@
     <main>
       <header class="topbar">
         <button class="mobile-menu" id="menuBtn" aria-label="เปิดเมนู"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div class="title"><h2>Overview</h2><p>ภาพรวมการขายบัตร</p></div>
+        <div class="title"><h2 id="page-title">Overview</h2><p id="page-subtitle">ภาพรวมการขายบัตร</p></div>
         <div class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></svg><span id="updatedAt">กำลังดึงข้อมูลจาก Google Sheets...</span></div>
       </header>
 
-      <section class="grid kpis" aria-label="ตัวชี้วัดหลัก">
+      <!-- Overview Page View -->
+      <div id="view-Overview" class="page-view active">
+        <section class="grid kpis" aria-label="ตัวชี้วัดหลัก">
         <article class="card kpi">
           <div class="card-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12 20 4m-4 0h4v4"/></svg>ขายได้แล้ว / เป้าหมาย</div>
           <div class="metric"><span id="kpi-sold-count">8</span> <span class="muted-number">/ <span id="kpi-target-count">3,000</span></span> <small>ใบ</small></div>
@@ -373,7 +576,7 @@
                 <div class="custom-progress-track">
                   <div id="bar-progress-fill" class="custom-progress-fill" style="width: 0.3%">
                     <div class="guitarist-avatar-wrap">
-                      <img src="pic/icon.png" alt="Guitarist Avatar" class="guitarist-avatar">
+                      <img src="pic/icon_Progress.png" alt="Guitarist Avatar" class="guitarist-avatar">
                     </div>
                   </div>
                 </div>
@@ -431,6 +634,71 @@
           <div id="month-september-label" class="progress-label">0.0%</div>
         </article>
       </section>
+      </div>
+
+      <!-- Orders Page View -->
+      <div id="view-Orders" class="page-view">
+        <!-- Filters Bar -->
+        <section class="filters-bar" aria-label="ตัวกรองข้อมูล">
+          <div class="filter-group search">
+            <label class="filter-label" for="search-input">ค้นหาข้อมูล</label>
+            <input type="text" id="search-input" class="filter-input" placeholder="ค้นหา วันที่, ประเภทบัตร, หมายเหตุ...">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="channel-filter">ช่องทาง</label>
+            <select id="channel-filter" class="filter-select">
+              <option value="all">ทั้งหมด</option>
+              <option value="website">Website</option>
+              <option value="line">Line</option>
+              <option value="หน้าร้าน">หน้าร้าน</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- KPI Summary for Orders -->
+        <section class="orders-summary">
+          <article class="summary-card">
+            <span class="label">จำนวนคำสั่งซื้อ</span>
+            <span class="value" id="summary-orders-count">0</span>
+          </article>
+          <article class="summary-card">
+            <span class="label">จำนวนบัตรที่ขายได้</span>
+            <span class="value" id="summary-tickets-count">0<small>ใบ</small></span>
+          </article>
+          <article class="summary-card">
+            <span class="label">ยอดขายรวม</span>
+            <span class="value" id="summary-total-revenue">฿0</span>
+          </article>
+        </section>
+
+        <!-- Orders Table Card -->
+        <section class="table-container">
+          <div class="table-scroll">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Order Date</th>
+                  <th>Channel</th>
+                  <th>Ticket Type</th>
+                  <th>Qty Ordered</th>
+                  <th>Unit Price</th>
+                  <th>Total Amount</th>
+                  <th>Month</th>
+                  <th>Remark</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--muted); padding: 30px;">กำลังโหลดข้อมูล...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="table-entries-info">แสดง 0 ถึง 0 จาก 0 รายการ</span>
+          </div>
+        </section>
+      </div>
     </main>
   </div>
   <div class="toast" id="toast">หน้านี้อยู่ในขั้นตอนถัดไป</div>
@@ -457,6 +725,7 @@
     };
 
     let state = { ...defaultState };
+    let globalOrders = [];
 
     // Load only cache that came from the current Google Sheet.
     // This prevents old mock values from showing when the browser has stale local data.
@@ -680,12 +949,16 @@
         }
       });
       
-      // 2. Parse sales from ordersRows
+      // 2. Parse sales and details from ordersRows
       const headers = ordersRows[0].map(h => h.trim());
       const dateIdx = headers.indexOf('Order Date');
       const channelIdx = headers.indexOf('Channel');
+      const ticketTypeIdx = headers.indexOf('Ticket Type');
       const qtyIdx = headers.indexOf('Qty Ordered');
+      const priceIdx = headers.indexOf('Unit Price');
+      const amountIdx = headers.indexOf('Total Amount');
       const monthIdx = headers.indexOf('Month');
+      const remarkIdx = headers.indexOf('Remark');
       
       const channelMap = {};
       const monthlySales = {
@@ -704,15 +977,32 @@
         }
       }
       
+      globalOrders = [];
       for (let i = 1; i < ordersRows.length; i++) {
         const row = ordersRows[i];
         if (row.length < headers.length) continue;
         
         const date = row[dateIdx] || '';
         const channel = row[channelIdx] || 'Others';
+        const ticketType = row[ticketTypeIdx] || '';
         const qty = parseInt(row[qtyIdx] || '0', 10) || 0;
+        const price = row[priceIdx] || '';
+        const amount = row[amountIdx] || '';
         const month = row[monthIdx] || '';
+        const remark = row[remarkIdx] || '';
+        
         const orderTime = parseOrderDate(date);
+        
+        globalOrders.push({
+          date,
+          channel,
+          ticketType,
+          qty,
+          price,
+          amount,
+          month,
+          remark
+        });
         
         // Channel sales aggregation
         if (!channelMap[channel]) {
@@ -798,6 +1088,79 @@
       });
     }
 
+    // Render Orders Table with Filter and Search
+    function renderOrdersTable() {
+      const tbody = document.getElementById('orders-table-body');
+      if (!tbody) return;
+      
+      const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+      const channelVal = document.getElementById('channel-filter').value;
+      
+      // Filter orders
+      const filteredOrders = globalOrders.filter(order => {
+        if (channelVal !== 'all' && order.channel.toLowerCase() !== channelVal.toLowerCase()) {
+          return false;
+        }
+        
+        if (searchVal) {
+          const matchDate = order.date.toLowerCase().includes(searchVal);
+          const matchTicket = order.ticketType.toLowerCase().includes(searchVal);
+          const matchRemark = order.remark.toLowerCase().includes(searchVal);
+          const matchChannel = order.channel.toLowerCase().includes(searchVal);
+          const matchMonth = order.month.toLowerCase().includes(searchVal);
+          if (!matchDate && !matchTicket && !matchRemark && !matchChannel && !matchMonth) {
+            return false;
+          }
+        }
+        
+        return true;
+      });
+      
+      // Calculate totals for filtered orders
+      const totalOrdersCount = filteredOrders.length;
+      const totalTicketsCount = filteredOrders.reduce((sum, o) => sum + o.qty, 0);
+      const totalRevenueSum = filteredOrders.reduce((sum, o) => {
+        const cleanAmount = parseInt(String(o.amount || '0').replace(/[^0-9.-]+/g, ''), 10) || 0;
+        return sum + cleanAmount;
+      }, 0);
+      
+      // Update dynamic KPI fields
+      document.getElementById('summary-orders-count').textContent = formatNumber(totalOrdersCount);
+      document.getElementById('summary-tickets-count').innerHTML = `${formatNumber(totalTicketsCount)}<small>ใบ</small>`;
+      document.getElementById('summary-total-revenue').textContent = `฿${formatNumber(totalRevenueSum)}`;
+      
+      if (filteredOrders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 40px; font-weight: 500;">ไม่พบข้อมูลสั่งซื้อที่ตรงตามเงื่อนไข</td></tr>`;
+        document.getElementById('table-entries-info').textContent = `แสดง 0 ถึง 0 จาก 0 รายการ`;
+        return;
+      }
+      
+      let html = '';
+      filteredOrders.forEach(order => {
+        let badgeClass = 'badge-other';
+        const chLower = order.channel.toLowerCase();
+        if (chLower.includes('website')) badgeClass = 'badge-website';
+        else if (chLower.includes('line') || chLower.includes('online')) badgeClass = 'badge-line';
+        else if (chLower.includes('หน้าร้าน') || chLower.includes('retail')) badgeClass = 'badge-retail';
+        
+        html += `
+          <tr>
+            <td>${order.date}</td>
+            <td><span class="badge ${badgeClass}">${order.channel}</span></td>
+            <td><span class="ticket-badge">${order.ticketType}</span></td>
+            <td><strong>${formatNumber(order.qty)}</strong></td>
+            <td>${order.price}</td>
+            <td><strong>${order.amount}</strong></td>
+            <td>${order.month}</td>
+            <td style="color: var(--muted); font-size: 13px;">${order.remark}</td>
+          </tr>
+        `;
+      });
+      
+      tbody.innerHTML = html;
+      document.getElementById('table-entries-info').textContent = `แสดง 1 ถึง ${filteredOrders.length} จาก ${filteredOrders.length} รายการ`;
+    }
+
     function updateUI() {
       // 1. Calculate Totals
       const totalSold = state.channels.reduce((sum, ch) => sum + ch.value, 0);
@@ -846,6 +1209,9 @@
       // Render channels list
       renderChannels();
 
+      // Render Orders Table
+      renderOrdersTable();
+
       // Donut Chart gradient
       const donutEl = document.getElementById('donut-chart');
       if (totalSold > 0) {
@@ -892,13 +1258,47 @@
       if (innerWidth <= 820 && !sidebar.contains(e.target) && !e.target.closest('#menuBtn')) sidebar.classList.remove('open');
     });
 
+    // Navigation and Page view toggling
     document.querySelectorAll('.nav button').forEach(button => button.addEventListener('click', () => {
-      if (button.dataset.page === 'Overview') return;
-      const toast = document.getElementById('toast');
-      toast.textContent = button.dataset.page + ' — หน้านี้อยู่ในขั้นตอนถัดไป';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 1800);
+      const targetPage = button.dataset.page;
+      
+      if (targetPage === 'Overview' || targetPage === 'Orders') {
+        // Toggle Sidebar active buttons
+        document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Switch Views
+        document.querySelectorAll('.page-view').forEach(view => view.style.display = 'none');
+        document.getElementById(`view-${targetPage}`).style.display = 'block';
+        
+        // Update Title & Subtitle in header topbar
+        const titleEl = document.getElementById('page-title');
+        const subtitleEl = document.getElementById('page-subtitle');
+        if (targetPage === 'Overview') {
+          titleEl.textContent = 'Overview';
+          subtitleEl.textContent = 'ภาพรวมการขายบัตร';
+        } else if (targetPage === 'Orders') {
+          titleEl.textContent = 'Orders';
+          subtitleEl.textContent = 'รายการสั่งซื้อทั้งหมด';
+          renderOrdersTable(); // Refresh table view on toggle
+        }
+        
+        // Auto-close sidebar on mobile
+        if (innerWidth <= 820) {
+          sidebar.classList.remove('open');
+        }
+      } else {
+        // Placeholder pages show Toast
+        const toast = document.getElementById('toast');
+        toast.textContent = targetPage + ' — หน้านี้อยู่ในขั้นตอนถัดไป';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1800);
+      }
     }));
+
+    // Setup interactive filters for Orders page
+    document.getElementById('search-input').addEventListener('input', renderOrdersTable);
+    document.getElementById('channel-filter').addEventListener('change', renderOrdersTable);
 
     // Start everything
     updateUI();
