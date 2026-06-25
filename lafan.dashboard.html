@@ -514,8 +514,8 @@
 
     // Fetch Google Sheet CSV data
     async function fetchSheetData() {
-      const ordersUrl = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/gviz/tq?tqx=out:csv&sheet=01_Orders_RAW";
-      const dashboardUrl = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/gviz/tq?tqx=out:csv&sheet=03_Dashboard_Data";
+      const ordersUrl = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/export?format=csv&gid=101";
+      const dashboardUrl = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/export?format=csv&gid=103";
       const updatedAtEl = document.getElementById('updatedAt');
       try {
         const [ordersRes, dashboardRes] = await Promise.all([
