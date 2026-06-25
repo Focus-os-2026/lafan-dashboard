@@ -514,13 +514,18 @@
 
     // Fetch Google Sheet CSV data
     async function fetchSheetData() {
-      const url = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/gviz/tq?tqx=out:csv&sheet=03_Dashboard_Data";
+      const ordersUrl = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/gviz/tq?tqx=out:csv&sheet=01_Orders_RAW";
+      const dashboardUrl = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/gviz/tq?tqx=out:csv&sheet=03_Dashboard_Data";
       const updatedAtEl = document.getElementById('updatedAt');
       try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Network response was not ok");
-        const csvText = await response.text();
-        parseCSVAndUpdateState(csvText);
+        const [ordersRes, dashboardRes] = await Promise.all([
+          fetch(ordersUrl),
+          fetch(dashboardUrl)
+        ]);
+        if (!ordersRes.ok || !dashboardRes.ok) throw new Error("Network response was not ok");
+        const ordersText = await ordersRes.text();
+        const dashboardText = await dashboardRes.text();
+        parseSheetsAndUpdateState(ordersText, dashboardText);
       } catch (error) {
         console.error("Error fetching Google Sheet data:", error);
         if (updatedAtEl) {
@@ -563,81 +568,138 @@
     }
 
     // Map rows to state and trigger refresh
-    function parseCSVAndUpdateState(csvText) {
-      const rows = parseCSV(csvText);
-      if (rows.length === 0) return;
+    function parseSheetsAndUpdateState(ordersText, dashboardText) {
+      const ordersRows = parseCSV(ordersText);
+      const dashboardRows = parseCSV(dashboardText);
       
-      state.channels = [];
-      state.monthlySales = {
-        july: { sales: 0, target: 1000 },
-        august: { sales: 0, target: 1000 },
-        september: { sales: 0, target: 1000 }
+      if (ordersRows.length === 0 || dashboardRows.length === 0) return;
+      
+      // 1. Parse targets from dashboardRows
+      let overallTarget = 3000;
+      let dailyTarget = 33;
+      let pendingTickets = 0;
+      const monthlyTargets = {
+        july: 1000,
+        august: 1000,
+        september: 1000
       };
       
-      let mode = ''; // can be 'channel', 'month', or ''
-      
-      rows.forEach(row => {
+      let dashboardMode = '';
+      dashboardRows.forEach(row => {
         if (row.length === 0) return;
         const col0 = row[0] || '';
         const col1 = row[1] || '';
         const col2 = row[2] || '';
         
         if (col0.includes("DASHBOARD DATA SOURCE")) {
-          mode = '';
+          dashboardMode = '';
           return;
         }
-        
         if (col0 === 'Channel') {
-          mode = 'channel';
+          dashboardMode = 'channel';
           return;
         }
-        
         if (col0 === 'Month') {
-          mode = 'month';
+          dashboardMode = 'month';
           return;
         }
         
-        if (mode === '') {
+        if (dashboardMode === '') {
           const cleanVal = parseInt(col1.replace(/,/g, '').replace(/%/g, '').trim(), 10) || 0;
           if (col0 === 'เป้าหมาย') {
-            state.target = cleanVal;
+            overallTarget = cleanVal;
           } else if (col0 === 'ขายเฉลี่ยต่อวัน เป้าหมาย') {
-            state.dailyTarget = cleanVal;
-          } else if (col0 === 'วันนี้ขายได้ / ยอดล่าสุด') {
-            state.todaySales = cleanVal;
+            dailyTarget = cleanVal;
           } else if (col0 === 'ยอดจองรอชำระ') {
-            state.pendingTickets = cleanVal;
+            pendingTickets = cleanVal;
           }
-        } else if (mode === 'channel') {
-          const val = parseInt(col1.replace(/,/g, '').trim(), 10) || 0;
-          if (col0 && col0 !== 'Channel' && col0 !== 'Total' && col0 !== 'รวม') {
-            let color = '#fb5932';
-            if (col0 === 'Online') color = '#287fc5';
-            else if (col0 === 'หน้าร้าน') color = '#a5a7aa';
-            else {
-              const palette = ['#8e44ad', '#27ae60', '#f1c40f', '#e67e22', '#16a085'];
-              const idx = state.channels.length;
-              color = palette[idx % palette.length];
-            }
-            state.channels.push({
-              id: col0.toLowerCase(),
-              name: col0,
-              value: val,
-              color: color
-            });
-          }
-        } else if (mode === 'month') {
-          const sales = parseInt(col1.replace(/,/g, '').trim(), 10) || 0;
+        } else if (dashboardMode === 'month') {
           const target = parseInt(col2.replace(/,/g, '').trim(), 10) || 0;
           if (col0.includes('กรกฎาคม') || col0.toLowerCase().includes('july')) {
-            state.monthlySales.july = { sales, target };
+            monthlyTargets.july = target;
           } else if (col0.includes('สิงหาคม') || col0.toLowerCase().includes('august')) {
-            state.monthlySales.august = { sales, target };
+            monthlyTargets.august = target;
           } else if (col0.includes('กันยายน') || col0.toLowerCase().includes('september')) {
-            state.monthlySales.september = { sales, target };
+            monthlyTargets.september = target;
           }
         }
       });
+      
+      // 2. Parse sales from ordersRows
+      const headers = ordersRows[0].map(h => h.trim());
+      const dateIdx = headers.indexOf('Order Date');
+      const channelIdx = headers.indexOf('Channel');
+      const qtyIdx = headers.indexOf('Qty Ordered');
+      const monthIdx = headers.indexOf('Month');
+      
+      const channelMap = {};
+      const monthlySales = {
+        july: { sales: 0, target: monthlyTargets.july },
+        august: { sales: 0, target: monthlyTargets.august },
+        september: { sales: 0, target: monthlyTargets.september }
+      };
+      
+      let todaySalesSum = 0;
+      const today = new Date();
+      const todayStr1 = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+      const todayStr2 = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      
+      for (let i = 1; i < ordersRows.length; i++) {
+        const row = ordersRows[i];
+        if (row.length < headers.length) continue;
+        
+        const date = row[dateIdx] || '';
+        const channel = row[channelIdx] || 'Others';
+        const qty = parseInt(row[qtyIdx] || '0', 10);
+        const month = row[monthIdx] || '';
+        
+        // Channel sales aggregation
+        if (!channelMap[channel]) {
+          channelMap[channel] = 0;
+        }
+        channelMap[channel] += qty;
+        
+        // Monthly sales aggregation
+        if (month.includes('กรกฎาคม') || month.toLowerCase().includes('july')) {
+          monthlySales.july.sales += qty;
+        } else if (month.includes('สิงหาคม') || month.toLowerCase().includes('august')) {
+          monthlySales.august.sales += qty;
+        } else if (month.includes('กันยายน') || month.toLowerCase().includes('september')) {
+          monthlySales.september.sales += qty;
+        }
+        
+        // Today's sales aggregation
+        if (date === todayStr1 || date === todayStr2) {
+          todaySalesSum += qty;
+        }
+      }
+      
+      // Build channels list
+      state.channels = [];
+      const palette = ['#fb5932', '#287fc5', '#a5a7aa', '#8e44ad', '#27ae60', '#f1c40f', '#e67e22', '#16a085'];
+      let colorIndex = 0;
+      
+      for (const [name, value] of Object.entries(channelMap)) {
+        let color = palette[colorIndex % palette.length];
+        if (name === 'Website') color = '#fb5932';
+        else if (name === 'Line' || name === 'Online') color = '#287fc5';
+        else if (name === 'หน้าร้าน') color = '#a5a7aa';
+        
+        state.channels.push({
+          id: name.toLowerCase(),
+          name: name,
+          value: value,
+          color: color
+        });
+        colorIndex++;
+      }
+      
+      // Update state targets and sales
+      state.target = overallTarget;
+      state.dailyTarget = dailyTarget;
+      state.pendingTickets = pendingTickets;
+      state.todaySales = todaySalesSum;
+      state.monthlySales = monthlySales;
       
       saveState();
       updateUI();
