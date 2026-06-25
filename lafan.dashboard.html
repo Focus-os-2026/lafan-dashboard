@@ -204,33 +204,7 @@
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
     }
 
-    /* Editable field styles */
-    .editable {
-      display: inline-block;
-      cursor: pointer;
-      border-bottom: 1.5px dashed var(--orange);
-      padding: 0 2px;
-      border-radius: 4px;
-      transition: background-color 0.2s, border-color 0.2s;
-    }
-    .editable:hover {
-      background-color: rgba(251, 89, 50, 0.08);
-    }
-    .editable:focus {
-      outline: none;
-      background-color: rgba(251, 89, 50, 0.12);
-      border-bottom-style: solid;
-      border-bottom-color: var(--orange);
-    }
-    .muted-number .editable {
-      border-bottom-color: #aaa9a4;
-    }
-    .muted-number .editable:hover {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-    .muted-number .editable:focus {
-      border-bottom-color: var(--ink);
-    }
+    /* Read-only dashboard styles */
     .pending-value-label {
       font-size: 14px;
       color: var(--orange);
@@ -362,7 +336,7 @@
       <section class="grid kpis" aria-label="ตัวชี้วัดหลัก">
         <article class="card kpi">
           <div class="card-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12 20 4m-4 0h4v4"/></svg>ขายได้แล้ว / เป้าหมาย</div>
-          <div class="metric"><span id="kpi-sold-count">2,145</span> <span class="muted-number">/ <span id="kpi-target-count" class="editable" contenteditable="true" inputmode="numeric">3,000</span></span> <small>ใบ</small></div>
+          <div class="metric"><span id="kpi-sold-count">2,145</span> <span class="muted-number">/ <span id="kpi-target-count">3,000</span></span> <small>ใบ</small></div>
           <div class="progress"><span id="kpi-progress-fill" style="width:71.5%"></span></div><div id="kpi-progress-label" class="progress-label">71.5%</div>
         </article>
         <article class="card kpi">
@@ -372,7 +346,7 @@
         <article class="card kpi">
           <div class="card-title"><svg viewBox="0 0 24 24"><path d="M4 20V10m5 10V6m5 14v-8m5 8V3"/><path d="m3 8 5-5 5 4 7-6"/></svg>ขายเฉลี่ยต่อวัน</div>
           <div class="comparison">
-            <div><div class="eyebrow">เป้าหมาย</div><strong><span id="kpi-daily-target" class="editable" contenteditable="true" inputmode="numeric">33</span> <small>ใบ/วัน</small></strong></div>
+            <div><div class="eyebrow">เป้าหมาย</div><strong><span id="kpi-daily-target">33</span> <small>ใบ/วัน</small></strong></div>
             <div class="divider"></div>
             <div class="today"><div class="eyebrow">วันนี้</div><strong><span id="kpi-today-sales">42</span> <small>ใบ</small></strong></div>
           </div>
@@ -380,7 +354,7 @@
         </article>
         <article class="card kpi">
           <div class="card-title"><svg viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M7 3c0 5 3 5 5 9-2 4-5 4-5 9m10-18c0 5-3 5-5 9 2 4 5 4 5 9"/></svg>ยอดจองรอชำระ</div>
-          <div class="metric"><span id="kpi-pending-count" class="editable" contenteditable="true" inputmode="numeric">210</span> <small>ใบ</small></div>
+          <div class="metric"><span id="kpi-pending-count">210</span> <small>ใบ</small></div>
           <div class="pending-value-label">มูลค่า <span id="kpi-pending-value">315,000</span> บาท</div>
         </article>
       </section>
@@ -399,7 +373,7 @@
                 <div class="custom-progress-track">
                   <div id="bar-progress-fill" class="custom-progress-fill" style="width: 71.5%">
                     <div class="guitarist-avatar-wrap">
-                      <img src="pic/icon.png" alt="Guitarist Avatar" class="guitarist-avatar">
+                      <img src="pic/icon_Progress.png" alt="Guitarist Avatar" class="guitarist-avatar">
                     </div>
                   </div>
                 </div>
@@ -430,7 +404,7 @@
           <h3>กรกฎาคม</h3>
           <div class="metric">
             <span id="month-july-sales">820</span> 
-            <span class="muted-number">/ <span id="month-july-target" class="editable" contenteditable="true" inputmode="numeric">1,000</span></span> 
+            <span class="muted-number">/ <span id="month-july-target">1,000</span></span> 
             <small>ใบ</small>
           </div>
           <div class="progress"><span id="month-july-fill" style="width:82%"></span></div>
@@ -440,7 +414,7 @@
           <h3>สิงหาคม</h3>
           <div class="metric">
             <span id="month-august-sales">640</span> 
-            <span class="muted-number">/ <span id="month-august-target" class="editable" contenteditable="true" inputmode="numeric">1,000</span></span> 
+            <span class="muted-number">/ <span id="month-august-target">1,000</span></span> 
             <small>ใบ</small>
           </div>
           <div class="progress"><span id="month-august-fill" style="width:64%"></span></div>
@@ -450,7 +424,7 @@
           <h3>กันยายน</h3>
           <div class="metric">
             <span id="month-september-sales">0</span> 
-            <span class="muted-number">/ <span id="month-september-target" class="editable" contenteditable="true" inputmode="numeric">1,000</span></span> 
+            <span class="muted-number">/ <span id="month-september-target">1,000</span></span> 
             <small>ใบ</small>
           </div>
           <div class="progress"><span id="month-september-fill" style="width:0%"></span></div>
@@ -540,7 +514,7 @@
 
     // Fetch Google Sheet CSV data
     async function fetchSheetData() {
-      const url = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/export?format=csv";
+      const url = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/gviz/tq?tqx=out:csv&sheet=03_Dashboard_Data";
       const updatedAtEl = document.getElementById('updatedAt');
       try {
         const response = await fetch(url);
@@ -561,10 +535,9 @@
       const lines = text.split(/\r?\n/);
       if (lines.length < 2) return [];
       
-      const headers = lines[0].split(',').map(h => h.trim());
       const rows = [];
       
-      for (let i = 1; i < lines.length; i++) {
+      for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
         
@@ -584,14 +557,7 @@
           }
         }
         values.push(currentValue.trim());
-        
-        if (values.length >= headers.length) {
-          const row = {};
-          headers.forEach((header, idx) => {
-            row[header] = values[idx];
-          });
-          rows.push(row);
-        }
+        rows.push(values);
       }
       return rows;
     }
@@ -603,62 +569,75 @@
       
       state.channels = [];
       state.monthlySales = {
-        july: { sales: 0, target: state.monthlySales?.july?.target || 1000 },
-        august: { sales: 0, target: state.monthlySales?.august?.target || 1000 },
-        september: { sales: 0, target: state.monthlySales?.september?.target || 1000 }
+        july: { sales: 0, target: 1000 },
+        august: { sales: 0, target: 1000 },
+        september: { sales: 0, target: 1000 }
       };
       
-      let todaySalesSum = 0;
-      const todayStr = new Date().toLocaleDateString('sv-SE'); // Swedish locale outputs YYYY-MM-DD
-      
-      const channelMap = {};
+      let mode = ''; // can be 'channel', 'month', or ''
       
       rows.forEach(row => {
-        const channel = row['Channel'] || 'Others';
-        const qty = parseInt(row['Qty Ordered'] || '0', 10);
-        const month = row['Month'] || '';
-        const date = row['Order Date'] || '';
+        if (row.length === 0) return;
+        const col0 = row[0] || '';
+        const col1 = row[1] || '';
+        const col2 = row[2] || '';
         
-        // 1. Channel aggregate
-        if (!channelMap[channel]) {
-          channelMap[channel] = 0;
-        }
-        channelMap[channel] += qty;
-        
-        // 2. Month aggregate
-        if (month.includes('กรกฎาคม') || month.toLowerCase().includes('july')) {
-          state.monthlySales.july.sales += qty;
-        } else if (month.includes('สิงหาคม') || month.toLowerCase().includes('august')) {
-          state.monthlySales.august.sales += qty;
-        } else if (month.includes('กันยายน') || month.toLowerCase().includes('september')) {
-          state.monthlySales.september.sales += qty;
+        if (col0.includes("DASHBOARD DATA SOURCE")) {
+          mode = '';
+          return;
         }
         
-        // 3. Today aggregate
-        if (date === todayStr) {
-          todaySalesSum += qty;
+        if (col0 === 'Channel') {
+          mode = 'channel';
+          return;
+        }
+        
+        if (col0 === 'Month') {
+          mode = 'month';
+          return;
+        }
+        
+        if (mode === '') {
+          const cleanVal = parseInt(col1.replace(/,/g, '').replace(/%/g, '').trim(), 10) || 0;
+          if (col0 === 'เป้าหมาย') {
+            state.target = cleanVal;
+          } else if (col0 === 'ขายเฉลี่ยต่อวัน เป้าหมาย') {
+            state.dailyTarget = cleanVal;
+          } else if (col0 === 'วันนี้ขายได้ / ยอดล่าสุด') {
+            state.todaySales = cleanVal;
+          } else if (col0 === 'ยอดจองรอชำระ') {
+            state.pendingTickets = cleanVal;
+          }
+        } else if (mode === 'channel') {
+          const val = parseInt(col1.replace(/,/g, '').trim(), 10) || 0;
+          if (col0 && col0 !== 'Channel' && col0 !== 'Total' && col0 !== 'รวม') {
+            let color = '#fb5932';
+            if (col0 === 'Online') color = '#287fc5';
+            else if (col0 === 'หน้าร้าน') color = '#a5a7aa';
+            else {
+              const palette = ['#8e44ad', '#27ae60', '#f1c40f', '#e67e22', '#16a085'];
+              const idx = state.channels.length;
+              color = palette[idx % palette.length];
+            }
+            state.channels.push({
+              id: col0.toLowerCase(),
+              name: col0,
+              value: val,
+              color: color
+            });
+          }
+        } else if (mode === 'month') {
+          const sales = parseInt(col1.replace(/,/g, '').trim(), 10) || 0;
+          const target = parseInt(col2.replace(/,/g, '').trim(), 10) || 0;
+          if (col0.includes('กรกฎาคม') || col0.toLowerCase().includes('july')) {
+            state.monthlySales.july = { sales, target };
+          } else if (col0.includes('สิงหาคม') || col0.toLowerCase().includes('august')) {
+            state.monthlySales.august = { sales, target };
+          } else if (col0.includes('กันยายน') || col0.toLowerCase().includes('september')) {
+            state.monthlySales.september = { sales, target };
+          }
         }
       });
-      
-      const palette = ['#fb5932', '#287fc5', '#8e44ad', '#27ae60', '#f1c40f', '#e67e22', '#16a085', '#a5a7aa'];
-      let colorIndex = 0;
-      
-      for (const [name, value] of Object.entries(channelMap)) {
-        let color = palette[colorIndex % palette.length];
-        if (name === 'Website') color = '#fb5932';
-        else if (name === 'Online') color = '#287fc5';
-        else if (name === 'หน้าร้าน') color = '#a5a7aa';
-        
-        state.channels.push({
-          id: name.toLowerCase(),
-          name: name,
-          value: value,
-          color: color
-        });
-        colorIndex++;
-      }
-      
-      state.todaySales = todaySalesSum;
       
       saveState();
       updateUI();
@@ -781,40 +760,6 @@
       });
     }
 
-    // Input handlers for targets only
-    function initEditableFields() {
-      const editables = document.querySelectorAll('.editable');
-      
-      editables.forEach(el => {
-        el.addEventListener('focus', selectText);
-        el.addEventListener('keydown', handleEnterKey);
-
-        el.addEventListener('blur', function() {
-          const val = parseNumber(this.textContent);
-          const id = this.id;
-
-          // Map the ID back to the state object
-          if (id === 'kpi-target-count') {
-            state.target = val;
-          } else if (id === 'kpi-daily-target') {
-            state.dailyTarget = val;
-          } else if (id === 'kpi-pending-count') {
-            state.pendingTickets = val;
-          } else if (id.startsWith('month-')) {
-            const parts = id.split('-'); // e.g. month-july-target
-            const month = parts[1];
-            const field = parts[2]; // target
-            if (state.monthlySales[month]) {
-              state.monthlySales[month][field] = val;
-            }
-          }
-
-          saveState();
-          updateUI();
-        });
-      });
-    }
-
     // Sidebar setup
     const sidebar = document.getElementById('sidebar');
     document.getElementById('menuBtn').addEventListener('click', () => sidebar.classList.toggle('open'));
@@ -831,7 +776,6 @@
     }));
 
     // Start everything
-    initEditableFields();
     updateUI();
     fetchSheetData();
     // Auto sync every 30 seconds
