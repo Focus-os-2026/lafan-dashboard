@@ -356,7 +356,7 @@
       <header class="topbar">
         <button class="mobile-menu" id="menuBtn" aria-label="เปิดเมนู"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
         <div class="title"><h2>Overview</h2><p>ภาพรวมการขายบัตร</p></div>
-        <div class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></svg><span id="updatedAt">อัปเดตล่าสุด: 4 ต.ค. 2569 10:00 น.</span></div>
+        <div class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></svg><span id="updatedAt">กำลังดึงข้อมูลจาก Google Sheets...</span></div>
       </header>
 
       <section class="grid kpis" aria-label="ตัวชี้วัดหลัก">
@@ -374,7 +374,7 @@
           <div class="comparison">
             <div><div class="eyebrow">เป้าหมาย</div><strong><span id="kpi-daily-target" class="editable" contenteditable="true" inputmode="numeric">33</span> <small>ใบ/วัน</small></strong></div>
             <div class="divider"></div>
-            <div class="today"><div class="eyebrow">วันนี้</div><strong><span id="kpi-today-sales" class="editable" contenteditable="true" inputmode="numeric">42</span> <small>ใบ</small></strong></div>
+            <div class="today"><div class="eyebrow">วันนี้</div><strong><span id="kpi-today-sales">42</span> <small>ใบ</small></strong></div>
           </div>
           <div id="kpi-daily-status" class="status">↑ &nbsp;สูงกว่าเป้าหมาย&nbsp; +27.3%</div>
         </article>
@@ -419,9 +419,6 @@
             <div>
               <div id="channels-container" class="channel-list">
               </div>
-              <div class="add-channel-bar">
-                <button id="add-channel-btn" class="add-channel-btn">+ เพิ่มช่องทาง</button>
-              </div>
               <div class="top-channel">🏆 Top channel<strong id="top-channel-text">Website เป็นช่องทางหลัก</strong></div>
             </div>
           </div>
@@ -432,7 +429,7 @@
         <article class="card month">
           <h3>กรกฎาคม</h3>
           <div class="metric">
-            <span id="month-july-sales" class="editable" contenteditable="true" inputmode="numeric">820</span> 
+            <span id="month-july-sales">820</span> 
             <span class="muted-number">/ <span id="month-july-target" class="editable" contenteditable="true" inputmode="numeric">1,000</span></span> 
             <small>ใบ</small>
           </div>
@@ -442,7 +439,7 @@
         <article class="card month">
           <h3>สิงหาคม</h3>
           <div class="metric">
-            <span id="month-august-sales" class="editable" contenteditable="true" inputmode="numeric">640</span> 
+            <span id="month-august-sales">640</span> 
             <span class="muted-number">/ <span id="month-august-target" class="editable" contenteditable="true" inputmode="numeric">1,000</span></span> 
             <small>ใบ</small>
           </div>
@@ -452,7 +449,7 @@
         <article class="card month">
           <h3>กันยายน</h3>
           <div class="metric">
-            <span id="month-september-sales" class="editable" contenteditable="true" inputmode="numeric">0</span> 
+            <span id="month-september-sales">0</span> 
             <span class="muted-number">/ <span id="month-september-target" class="editable" contenteditable="true" inputmode="numeric">1,000</span></span> 
             <small>ใบ</small>
           </div>
@@ -541,66 +538,159 @@
       }
     }
 
+    // Fetch Google Sheet CSV data
+    async function fetchSheetData() {
+      const url = "https://docs.google.com/spreadsheets/d/1vpOhf9AD4p3iPqBW2KMq8t6dcV3zCgHJAlnqAMiawLk/export?format=csv";
+      const updatedAtEl = document.getElementById('updatedAt');
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Network response was not ok");
+        const csvText = await response.text();
+        parseCSVAndUpdateState(csvText);
+      } catch (error) {
+        console.error("Error fetching Google Sheet data:", error);
+        if (updatedAtEl) {
+          updatedAtEl.textContent = 'ดึงข้อมูลไม่สำเร็จ (ใช้ข้อมูลล่าสุดในเครื่อง)';
+          updatedAtEl.style.color = '#ff7a50';
+        }
+      }
+    }
+
+    // Parse CSV handling commas in quotes
+    function parseCSV(text) {
+      const lines = text.split(/\r?\n/);
+      if (lines.length < 2) return [];
+      
+      const headers = lines[0].split(',').map(h => h.trim());
+      const rows = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const values = [];
+        let insideQuote = false;
+        let currentValue = '';
+        
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          if (char === '"') {
+            insideQuote = !insideQuote;
+          } else if (char === ',' && !insideQuote) {
+            values.push(currentValue.trim());
+            currentValue = '';
+          } else {
+            currentValue += char;
+          }
+        }
+        values.push(currentValue.trim());
+        
+        if (values.length >= headers.length) {
+          const row = {};
+          headers.forEach((header, idx) => {
+            row[header] = values[idx];
+          });
+          rows.push(row);
+        }
+      }
+      return rows;
+    }
+
+    // Map rows to state and trigger refresh
+    function parseCSVAndUpdateState(csvText) {
+      const rows = parseCSV(csvText);
+      if (rows.length === 0) return;
+      
+      state.channels = [];
+      state.monthlySales = {
+        july: { sales: 0, target: state.monthlySales?.july?.target || 1000 },
+        august: { sales: 0, target: state.monthlySales?.august?.target || 1000 },
+        september: { sales: 0, target: state.monthlySales?.september?.target || 1000 }
+      };
+      
+      let todaySalesSum = 0;
+      const todayStr = new Date().toLocaleDateString('sv-SE'); // Swedish locale outputs YYYY-MM-DD
+      
+      const channelMap = {};
+      
+      rows.forEach(row => {
+        const channel = row['Channel'] || 'Others';
+        const qty = parseInt(row['Qty Ordered'] || '0', 10);
+        const month = row['Month'] || '';
+        const date = row['Order Date'] || '';
+        
+        // 1. Channel aggregate
+        if (!channelMap[channel]) {
+          channelMap[channel] = 0;
+        }
+        channelMap[channel] += qty;
+        
+        // 2. Month aggregate
+        if (month.includes('กรกฎาคม') || month.toLowerCase().includes('july')) {
+          state.monthlySales.july.sales += qty;
+        } else if (month.includes('สิงหาคม') || month.toLowerCase().includes('august')) {
+          state.monthlySales.august.sales += qty;
+        } else if (month.includes('กันยายน') || month.toLowerCase().includes('september')) {
+          state.monthlySales.september.sales += qty;
+        }
+        
+        // 3. Today aggregate
+        if (date === todayStr) {
+          todaySalesSum += qty;
+        }
+      });
+      
+      const palette = ['#fb5932', '#287fc5', '#8e44ad', '#27ae60', '#f1c40f', '#e67e22', '#16a085', '#a5a7aa'];
+      let colorIndex = 0;
+      
+      for (const [name, value] of Object.entries(channelMap)) {
+        let color = palette[colorIndex % palette.length];
+        if (name === 'Website') color = '#fb5932';
+        else if (name === 'Online') color = '#287fc5';
+        else if (name === 'หน้าร้าน') color = '#a5a7aa';
+        
+        state.channels.push({
+          id: name.toLowerCase(),
+          name: name,
+          value: value,
+          color: color
+        });
+        colorIndex++;
+      }
+      
+      state.todaySales = todaySalesSum;
+      
+      saveState();
+      updateUI();
+      
+      // Update Sync timestamp
+      const updatedAtEl = document.getElementById('updatedAt');
+      if (updatedAtEl) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        updatedAtEl.textContent = `อัปเดตล่าสุดจาก Google Sheets: วันนี้ ${timeStr} น.`;
+        updatedAtEl.style.color = '';
+      }
+    }
+
     function renderChannels() {
       const container = document.getElementById('channels-container');
       container.innerHTML = '';
       
       const totalSold = state.channels.reduce((sum, ch) => sum + ch.value, 0);
 
-      state.channels.forEach((ch, index) => {
+      state.channels.forEach((ch) => {
         const pct = totalSold > 0 ? (ch.value / totalSold) * 100 : 0;
         
         const channelDiv = document.createElement('div');
         channelDiv.className = 'channel';
         channelDiv.innerHTML = `
           <span class="swatch" style="background: ${ch.color}"></span>
-          <span class="channel-name"><span class="editable chan-name-edit" data-index="${index}" contenteditable="true">${ch.name}</span></span>
-          <strong><span class="editable chan-value-edit" data-index="${index}" contenteditable="true" inputmode="numeric">${formatNumber(ch.value)}</span> ใบ</strong>
+          <span class="channel-name"><span>${ch.name}</span></span>
+          <strong><span>${formatNumber(ch.value)}</span> ใบ</strong>
           <em style="color: ${ch.color === '#a5a7aa' ? '#6d7074' : ch.color === '#287fc5' ? '#176ead' : 'inherit'}">${pct.toFixed(1)}%</em>
-          <button class="delete-channel-btn" data-index="${index}" title="ลบช่องทางนี้">&times;</button>
         `;
         container.appendChild(channelDiv);
-      });
-
-      // Bind event listeners to new editables
-      const nameEdits = container.querySelectorAll('.chan-name-edit');
-      nameEdits.forEach(el => {
-        el.addEventListener('focus', selectText);
-        el.addEventListener('keydown', handleEnterKey);
-        el.addEventListener('blur', function() {
-          const idx = parseInt(this.dataset.index, 10);
-          state.channels[idx].name = this.textContent.trim() || `ช่องทาง ${idx + 1}`;
-          saveState();
-          updateUI();
-        });
-      });
-
-      const valueEdits = container.querySelectorAll('.chan-value-edit');
-      valueEdits.forEach(el => {
-        el.addEventListener('focus', selectText);
-        el.addEventListener('keydown', handleEnterKey);
-        el.addEventListener('blur', function() {
-          const idx = parseInt(this.dataset.index, 10);
-          const val = parseNumber(this.textContent);
-          state.channels[idx].value = val;
-          saveState();
-          updateUI();
-        });
-      });
-
-      // Bind delete buttons
-      const deleteBtns = container.querySelectorAll('.delete-channel-btn');
-      deleteBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-          const idx = parseInt(this.dataset.index, 10);
-          if (state.channels.length <= 1) {
-            alert('ต้องมีอย่างน้อย 1 ช่องทางการขายครับ');
-            return;
-          }
-          state.channels.splice(idx, 1);
-          saveState();
-          updateUI();
-        });
       });
     }
 
@@ -691,9 +781,9 @@
       });
     }
 
-    // Input handlers for main KPIs (monthly, daily targets etc)
+    // Input handlers for targets only
     function initEditableFields() {
-      const editables = document.querySelectorAll('.editable:not(.chan-name-edit):not(.chan-value-edit)');
+      const editables = document.querySelectorAll('.editable');
       
       editables.forEach(el => {
         el.addEventListener('focus', selectText);
@@ -708,15 +798,15 @@
             state.target = val;
           } else if (id === 'kpi-daily-target') {
             state.dailyTarget = val;
-          } else if (id === 'kpi-today-sales') {
-            state.todaySales = val;
           } else if (id === 'kpi-pending-count') {
             state.pendingTickets = val;
           } else if (id.startsWith('month-')) {
-            const parts = id.split('-'); // e.g. month-july-sales
+            const parts = id.split('-'); // e.g. month-july-target
             const month = parts[1];
-            const field = parts[2]; // sales or target
-            state.monthlySales[month][field] = val;
+            const field = parts[2]; // target
+            if (state.monthlySales[month]) {
+              state.monthlySales[month][field] = val;
+            }
           }
 
           saveState();
@@ -740,31 +830,12 @@
       setTimeout(() => toast.classList.remove('show'), 1800);
     }));
 
-    // Add channel button event
-    const palette = ['#fb5932', '#287fc5', '#8e44ad', '#27ae60', '#f1c40f', '#e67e22', '#16a085', '#a5a7aa'];
-    document.getElementById('add-channel-btn').addEventListener('click', function() {
-      const nextColor = palette[state.channels.length % palette.length];
-      const newChan = {
-        id: `custom_${Date.now()}`,
-        name: 'ช่องทางใหม่',
-        value: 0,
-        color: nextColor
-      };
-      state.channels.push(newChan);
-      saveState();
-      updateUI();
-
-      // Focus the new channel's name input
-      const container = document.getElementById('channels-container');
-      const lastChannelEdit = container.querySelector(`.chan-name-edit[data-index="${state.channels.length - 1}"]`);
-      if (lastChannelEdit) {
-        lastChannelEdit.focus();
-      }
-    });
-
     // Start everything
     initEditableFields();
     updateUI();
+    fetchSheetData();
+    // Auto sync every 30 seconds
+    setInterval(fetchSheetData, 30000);
   </script>
 </body>
 </html>
