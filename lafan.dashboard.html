@@ -64,7 +64,7 @@
     .metric small { font:500 18px "Noto Sans Thai",sans-serif; color:#5b6067; letter-spacing:0; }
     .metric .muted-number { color:#5e6268; font-size:.68em; }
     .progress { height:11px; border-radius:99px; background:#e6e8eb; box-shadow:inset 0 1px 3px rgba(0,0,0,.14); overflow:hidden; }
-    .progress > span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#ff7a50,#fb5932); }
+    .progress > span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#ff7a50,#fb5932); transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1); }
     .progress-label { text-align:center; color:var(--orange); font-weight:700; font-size:19px; margin-top:7px; }
     .comparison { display:grid; grid-template-columns:1fr 1px 1fr; gap:16px; align-items:end; margin:auto 0 7px; }
     .comparison .divider { background:#c9cbd0; height:58px; }
@@ -184,6 +184,7 @@
                   linear-gradient(90deg, #fb3232, #ff7a50);
       position: relative;
       box-shadow: 0 0 12px rgba(251, 50, 50, 0.45);
+      transition: width 1.6s cubic-bezier(0.34, 1.3, 0.64, 1); /* smooth slide-in with subtle elastic bounce back */
     }
     .guitarist-avatar-wrap {
       position: absolute;
