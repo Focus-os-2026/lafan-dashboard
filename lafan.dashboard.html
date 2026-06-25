@@ -1167,8 +1167,11 @@
       // Update KPI 1: Sold / Target
       animateNumber('kpi-sold-count', totalSold);
       animateNumber('kpi-target-count', state.target);
-      document.getElementById('kpi-progress-fill').style.width = `${totalProgress.toFixed(1)}%`;
       document.getElementById('kpi-progress-label').textContent = `${totalProgress.toFixed(1)}%`;
+      setTimeout(() => {
+        const kpiFill = document.getElementById('kpi-progress-fill');
+        if (kpiFill) kpiFill.style.width = `${Math.min(100, totalProgress).toFixed(1)}%`;
+      }, 50);
 
       // Update KPI 2: Remaining
       animateNumber('kpi-remaining-count', remaining);
@@ -1198,7 +1201,10 @@
       animateNumber('bar-sold-count', totalSold);
       animateNumber('bar-target-count', state.target);
       document.getElementById('bar-progress-percent').textContent = `${totalProgress.toFixed(1)}%`;
-      document.getElementById('bar-progress-fill').style.width = `${totalProgress.toFixed(1)}%`;
+      setTimeout(() => {
+        const barFill = document.getElementById('bar-progress-fill');
+        if (barFill) barFill.style.width = `${Math.min(100, totalProgress).toFixed(1)}%`;
+      }, 50);
 
       // Update Channel Sales dynamic UI parts
       animateNumber('chan-total-val', totalSold);
@@ -1243,8 +1249,11 @@
         
         animateNumber(`month-${m}-sales`, sales);
         animateNumber(`month-${m}-target`, target);
-        document.getElementById(`month-${m}-fill`).style.width = `${pct.toFixed(1)}%`;
         document.getElementById(`month-${m}-label`).textContent = `${pct.toFixed(1)}%`;
+        setTimeout(() => {
+          const fillEl = document.getElementById(`month-${m}-fill`);
+          if (fillEl) fillEl.style.width = `${Math.min(100, pct).toFixed(1)}%`;
+        }, 50);
       });
     }
 
@@ -1274,6 +1283,16 @@
         if (targetPage === 'Overview') {
           titleEl.textContent = 'Overview';
           subtitleEl.textContent = 'ภาพรวมการขายบัตร';
+          // Temporarily reset widths to 0 to trigger animation entry on tab switch
+          const kpiFill = document.getElementById('kpi-progress-fill');
+          const barFill = document.getElementById('bar-progress-fill');
+          if (kpiFill) kpiFill.style.width = '0%';
+          if (barFill) barFill.style.width = '0%';
+          ['july', 'august', 'september'].forEach(m => {
+            const fillEl = document.getElementById(`month-${m}-fill`);
+            if (fillEl) fillEl.style.width = '0%';
+          });
+          updateUI();
         } else if (targetPage === 'Orders') {
           titleEl.textContent = 'Orders';
           subtitleEl.textContent = 'รายการสั่งซื้อทั้งหมด';
