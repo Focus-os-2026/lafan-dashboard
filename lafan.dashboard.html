@@ -507,6 +507,76 @@
         gap: 12px;
       }
     }
+
+    /* Funnel styles */
+    .funnel-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .funnel-step {
+      background: #fff;
+      border: 1px solid #ededeb;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+    .funnel-step-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .funnel-step-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-top: 2px;
+    }
+    .funnel-step-value {
+      text-align: right;
+    }
+    .funnel-step-num {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      font-family: "Inter", sans-serif;
+    }
+    .funnel-step-ratio {
+      font-size: 13px;
+      margin-top: 2px;
+      font-weight: 700;
+    }
+
+    /* SVG trends chart */
+    .trends-line {
+      fill: none;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .trends-line.visitors {
+      stroke: var(--orange);
+    }
+    .trends-line.pageviews {
+      stroke: var(--blue);
+    }
+    .trends-gridline {
+      stroke: #ededeb;
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+    .trends-axis-text {
+      font-size: 11px;
+      fill: var(--muted);
+      font-family: "Inter", "Noto Sans Thai", sans-serif;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -629,6 +699,84 @@
           </div>
           <div class="progress"><span id="month-september-fill" style="width:0%"></span></div>
           <div id="month-september-label" class="progress-label">0.0%</div>
+        </article>
+      </section>
+
+      <!-- LinkHub Analytics Section -->
+      <h3 class="section-title" style="margin-top: 32px; margin-bottom: 14px;">สถิติผู้เข้าชม LinkHub</h3>
+      
+      <section class="grid kpis" style="grid-template-columns: repeat(3, 1fr);" aria-label="ตัวชี้วัด LinkHub">
+        <article class="card kpi" style="min-height: 140px;">
+          <div class="card-title"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>ผู้เข้าชมวันนี้ (Unique Visitors)</div>
+          <div class="metric" style="margin-top: 20px;"><span id="bq-visitors-today">0</span> <small>คน</small></div>
+        </article>
+        <article class="card kpi" style="min-height: 140px;">
+          <div class="card-title"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>เปิดอ่านเพจวันนี้ (Pageviews)</div>
+          <div class="metric" style="margin-top: 20px;"><span id="bq-pageviews-today">0</span> <small>ครั้ง</small></div>
+        </article>
+        <article class="card kpi" style="min-height: 140px;">
+          <div class="card-title"><svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>ยอดคลิกปุ่มวันนี้ (Clicks)</div>
+          <div class="metric" style="margin-top: 20px;"><span id="bq-clicks-today">0</span> <small>ครั้ง</small></div>
+        </article>
+      </section>
+
+      <section class="grid middle" style="margin-top: 14px;">
+        <!-- Top Buttons list card -->
+        <article class="card chart-card" style="min-height: 280px;">
+          <h3 class="section-title">ปุ่มที่ถูกคลิกสูงสุดวันนี้</h3>
+          <div id="bq-top-buttons-container" class="channel-list" style="margin-top: 15px;">
+            <div style="text-align: center; color: var(--muted); padding: 30px;">กำลังดึงข้อมูล...</div>
+          </div>
+        </article>
+
+        <!-- Funnel Card -->
+        <article class="card chart-card" style="min-height: 280px;">
+          <h3 class="section-title">กรวยการสั่งซื้อ (LinkHub Funnel)</h3>
+          <div class="funnel-container" style="margin-top: 12px;">
+            <!-- Step 1 -->
+            <div class="funnel-step">
+              <div>
+                <span class="funnel-step-label">Step 1</span>
+                <div class="funnel-step-name">เข้าชม LinkHub</div>
+              </div>
+              <div class="funnel-step-value">
+                <span class="funnel-step-num" id="funnel-visitors">0</span> <small>คน</small>
+                <div class="funnel-step-ratio" style="color: var(--muted);">100% ของคนเข้า</div>
+              </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="funnel-step">
+              <div>
+                <span class="funnel-step-label" style="color: var(--orange);">Step 2</span>
+                <div class="funnel-step-name">คลิกซื้อบัตร (CTR)</div>
+              </div>
+              <div class="funnel-step-value">
+                <span class="funnel-step-num" id="funnel-clicks">0</span> <small>คน</small>
+                <div class="funnel-step-ratio" id="funnel-ctr" style="color: var(--orange);">0.0% CTR</div>
+              </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="funnel-step">
+              <div>
+                <span class="funnel-step-label" style="color: var(--green);">Step 3</span>
+                <div class="funnel-step-name">ชำระเงินสำเร็จ (Conversion)</div>
+              </div>
+              <div class="funnel-step-value">
+                <span class="funnel-step-num" id="funnel-buys">0</span> <small>ใบ</small>
+                <div class="funnel-step-ratio" id="funnel-conv" style="color: var(--green);">0.0% Conv</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- 30-Day trend chart -->
+      <section class="grid" style="grid-template-columns: 1fr; margin-top: 14px;">
+        <article class="card chart-card">
+          <h3 class="section-title">แนวโน้มการเข้าชมรายวัน (30 วันที่ผ่านมา)</h3>
+          <div id="bq-trends-chart-container" style="width: 100%; height: 240px; margin-top: 15px; position: relative;">
+            <svg id="bq-trends-chart" style="width: 100%; height: 100%; overflow: visible;"></svg>
+          </div>
         </article>
       </section>
       </div>
@@ -1316,11 +1464,249 @@
     document.getElementById('search-input').addEventListener('input', renderOrdersTable);
     document.getElementById('channel-filter').addEventListener('change', renderOrdersTable);
 
+    // Fetch BigQuery Analytics from Flask endpoint
+    async function fetchAnalytics() {
+      try {
+        const response = await fetch('/api/analytics');
+        if (!response.ok) throw new Error("Analytics response was not ok");
+        const data = await response.json();
+        renderAnalytics(data);
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      }
+    }
+
+    // Render SVG trends chart
+    function renderTrendsChart(trends) {
+      const container = document.getElementById('bq-trends-chart-container');
+      const svg = document.getElementById('bq-trends-chart');
+      if (!svg || !container || !trends || trends.length === 0) return;
+
+      const width = container.clientWidth || 800;
+      const height = 220;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.innerHTML = '';
+
+      const paddingLeft = 50;
+      const paddingRight = 20;
+      const paddingTop = 20;
+      const paddingBottom = 30;
+
+      const chartWidth = width - paddingLeft - paddingRight;
+      const chartHeight = height - paddingTop - paddingBottom;
+
+      const maxVal = Math.max(...trends.map(d => Math.max(d.visitors, d.pageviews)), 50);
+
+      // Y Axis Grid & Labels
+      const yTicks = 4;
+      for (let i = 0; i <= yTicks; i++) {
+        const val = Math.round((maxVal / yTicks) * i);
+        const y = height - paddingBottom - (chartHeight / yTicks) * i;
+        
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', paddingLeft);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', width - paddingRight);
+        line.setAttribute('y2', y);
+        line.setAttribute('class', 'trends-gridline');
+        svg.appendChild(line);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', paddingLeft - 10);
+        text.setAttribute('y', y + 4);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('class', 'trends-axis-text');
+        text.textContent = formatNumber(val);
+        svg.appendChild(text);
+      }
+
+      const dx = chartWidth / (trends.length - 1);
+      let visitorsPath = '';
+      let pageviewsPath = '';
+      let areaPageviewsPath = `M ${paddingLeft} ${height - paddingBottom} `;
+      let areaVisitorsPath = `M ${paddingLeft} ${height - paddingBottom} `;
+
+      trends.forEach((d, index) => {
+        const x = paddingLeft + index * dx;
+        const yV = height - paddingBottom - (d.visitors / maxVal) * chartHeight;
+        const yP = height - paddingBottom - (d.pageviews / maxVal) * chartHeight;
+
+        if (index === 0) {
+          visitorsPath += `M ${x} ${yV} `;
+          pageviewsPath += `M ${x} ${yP} `;
+        } else {
+          visitorsPath += `L ${x} ${yV} `;
+          pageviewsPath += `L ${x} ${yP} `;
+        }
+        areaPageviewsPath += `L ${x} ${yP} `;
+        areaVisitorsPath += `L ${x} ${yV} `;
+      });
+
+      areaPageviewsPath += `L ${paddingLeft + (trends.length - 1) * dx} ${height - paddingBottom} Z`;
+      areaVisitorsPath += `L ${paddingLeft + (trends.length - 1) * dx} ${height - paddingBottom} Z`;
+
+      const areaP = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      areaP.setAttribute('d', areaPageviewsPath);
+      areaP.setAttribute('fill', 'rgba(40, 127, 197, 0.05)');
+      svg.appendChild(areaP);
+
+      const areaV = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      areaV.setAttribute('d', areaVisitorsPath);
+      areaV.setAttribute('fill', 'rgba(251, 89, 50, 0.04)');
+      svg.appendChild(areaV);
+
+      const pathP = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathP.setAttribute('d', pageviewsPath);
+      pathP.setAttribute('class', 'trends-line pageviews');
+      svg.appendChild(pathP);
+
+      const pathV = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathV.setAttribute('d', visitorsPath);
+      pathV.setAttribute('class', 'trends-line visitors');
+      svg.appendChild(pathV);
+
+      // X Axis Dates Labels
+      const xLabelInterval = Math.ceil(trends.length / 5);
+      trends.forEach((d, index) => {
+        if (index % xLabelInterval === 0 || index === trends.length - 1) {
+          const x = paddingLeft + index * dx;
+          
+          const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          tick.setAttribute('x1', x);
+          tick.setAttribute('y1', height - paddingBottom);
+          tick.setAttribute('x2', x);
+          tick.setAttribute('y2', height - paddingBottom + 5);
+          tick.setAttribute('stroke', '#dcdfe3');
+          svg.appendChild(tick);
+
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', x);
+          text.setAttribute('y', height - paddingBottom + 20);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('class', 'trends-axis-text');
+          
+          const parts = d.day.split('-');
+          text.textContent = parts.length === 3 ? `${parseInt(parts[2])}/${parseInt(parts[1])}` : d.day;
+          svg.appendChild(text);
+        }
+      });
+      
+      // Legend
+      const legend = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      legend.setAttribute('transform', `translate(${paddingLeft + 10}, ${paddingTop})`);
+      
+      const rectP = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rectP.setAttribute('width', 12);
+      rectP.setAttribute('height', 12);
+      rectP.setAttribute('rx', 3);
+      rectP.setAttribute('fill', 'var(--blue)');
+      legend.appendChild(rectP);
+      
+      const labelP = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      labelP.setAttribute('x', 18);
+      labelP.setAttribute('y', 10);
+      labelP.setAttribute('font-size', '11px');
+      labelP.setAttribute('font-weight', '600');
+      labelP.setAttribute('fill', '#6c6c68');
+      labelP.textContent = 'Pageviews';
+      legend.appendChild(labelP);
+
+      const rectV = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rectV.setAttribute('x', 100);
+      rectV.setAttribute('width', 12);
+      rectV.setAttribute('height', 12);
+      rectV.setAttribute('rx', 3);
+      rectV.setAttribute('fill', 'var(--orange)');
+      legend.appendChild(rectV);
+      
+      const labelV = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      labelV.setAttribute('x', 118);
+      labelV.setAttribute('y', 10);
+      labelV.setAttribute('font-size', '11px');
+      labelV.setAttribute('font-weight', '600');
+      labelV.setAttribute('fill', '#6c6c68');
+      labelV.textContent = 'Unique Visitors';
+      legend.appendChild(labelV);
+      
+      svg.appendChild(legend);
+    }
+
+    // Render Analytics UI Metrics
+    function renderAnalytics(data) {
+      if (!data) return;
+
+      // KPI Counts
+      animateNumber('bq-visitors-today', data.summary.visitors_today);
+      animateNumber('bq-pageviews-today', data.summary.pageviews_today);
+      animateNumber('bq-clicks-today', data.summary.clicks_today);
+
+      // Funnel
+      animateNumber('funnel-visitors', data.funnel.visitors);
+      animateNumber('funnel-clicks', data.funnel.clicked_buy);
+      
+      const ctrPct = data.funnel.visitors > 0 ? (data.funnel.clicked_buy / data.funnel.visitors) * 100 : 0;
+      document.getElementById('funnel-ctr').textContent = `${ctrPct.toFixed(1)}% CTR`;
+
+      // Funnel Step 3 (Purchased) - calculated dynamically from overall sold count
+      const totalSold = state.channels.reduce((sum, ch) => sum + ch.value, 0);
+      animateNumber('funnel-buys', totalSold);
+      
+      const convPct = data.funnel.visitors > 0 ? (totalSold / data.funnel.visitors) * 100 : 0;
+      document.getElementById('funnel-conv').textContent = `${convPct.toFixed(1)}% Conv`;
+
+      // Top Buttons Table
+      const bqContainer = document.getElementById('bq-top-buttons-container');
+      if (bqContainer) {
+        bqContainer.innerHTML = '';
+        if (data.top_buttons.length === 0) {
+          bqContainer.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 30px;">ไม่มีข้อมูลการคลิกปุ่มในวันนี้</div>';
+        } else {
+          const totalClicks = data.top_buttons.reduce((sum, b) => sum + b.clicks, 0);
+          data.top_buttons.forEach((btn, idx) => {
+            const pct = totalClicks > 0 ? (btn.clicks / totalClicks) * 100 : 0;
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'channel';
+            
+            // Assign a nice swatch color based on index
+            const colors = ['#fb5932', '#287fc5', '#a5a7aa', '#8e44ad'];
+            const color = colors[idx % colors.length];
+
+            rowDiv.innerHTML = `
+              <span class="swatch" style="background: ${color}"></span>
+              <span class="channel-name"><span>${btn.label}</span></span>
+              <strong><span>${formatNumber(btn.clicks)}</span> ครั้ง</strong>
+              <em style="color: ${color === '#a5a7aa' ? '#6d7074' : color === '#287fc5' ? '#176ead' : 'inherit'}">${pct.toFixed(1)}%</em>
+            `;
+            bqContainer.appendChild(rowDiv);
+          });
+        }
+      }
+
+      // Trends Chart
+      renderTrendsChart(data.daily_trends);
+    }
+
     // Start everything
     updateUI();
     fetchSheetData();
+    fetchAnalytics();
+    
     // Auto sync every 30 seconds
-    setInterval(fetchSheetData, 30000);
+    setInterval(() => {
+      fetchSheetData();
+      fetchAnalytics();
+    }, 30000);
+
+    // Re-draw SVG chart on window resize
+    window.addEventListener('resize', () => {
+      const chartContainer = document.getElementById('bq-trends-chart-container');
+      if (chartContainer && chartContainer.style.display !== 'none') {
+        fetch('/api/analytics')
+          .then(res => res.json())
+          .then(data => renderTrendsChart(data.daily_trends))
+          .catch(e => console.error(e));
+      }
+    });
   </script>
 </body>
 </html>
